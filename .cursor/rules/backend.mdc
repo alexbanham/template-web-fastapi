@@ -1,0 +1,62 @@
+---
+description: FastAPI, Pydantic, and Python conventions for the backend
+globs: backend/**/*.py
+alwaysApply: false
+---
+
+# Backend Patterns
+
+## API Design
+
+- All routes live under `api/v1/endpoints/`. Each file is a single domain (e.g., `health.py`, `users.py`).
+- Use Pydantic models for **all** request/response schemas (DTOs). Never return raw dicts from endpoints.
+- Route functions are thin: validate input → call service logic → return response. Business logic does not live in route handlers.
+
+## Layered Architecture (keep it lean)
+
+```
+endpoints/   → Route definitions (thin controllers)
+schemas.py   → Pydantic request/response models (DTOs)
+service.py   → Business logic (only when logic exceeds a few lines)
+models.py    → Database / ORM models (when DB is added)
+```
+
+- Only create a `service.py` when the logic is non-trivial. A three-line CRUD operation can stay in the endpoint.
+- Only create a `models.py` when you add a database. Do not pre-create empty files.
+
+## Configuration
+
+- All settings go through `config.py` using `pydantic-settings`. Never read `os.environ` directly.
+- Use `get_settings()` (cached with `@lru_cache`) via FastAPI's `Depends()` for dependency injection.
+
+## Error Handling
+
+- Raise `HTTPException` with clear `detail` messages for client errors (4xx).
+- Let unexpected exceptions bubble up to FastAPI's default 500 handler. Do not catch-all in endpoints.
+
+## Naming
+
+- Files: `snake_case.py`
+- Pydantic models: `PascalCase` with descriptive suffixes (`UserCreate`, `UserResponse`)
+- Route functions: `snake_case` verbs (`get_user`, `create_order`)
+- Router prefix matches the domain: `/users`, `/orders`
+
+## Adding a New Domain
+
+1. Create `api/v1/endpoints/<domain>.py` with an `APIRouter`.
+2. Create `api/v1/schemas/<domain>.py` if you need request/response models.
+3. Register the router in `api/v1/router.py`.
+4. After creating the endpoint, **run it and verify the response** before moving on.
+
+## Performance
+
+- **Pagination**: List endpoints return paginated results. Use `skip`/`limit` or cursor-based pagination. Never return unbounded lists.
+- **Projection**: Use `.find(..., projection={...})` to fetch only the fields you need. Avoid `SELECT *`-style queries.
+- **Indexes**: Add indexes for fields used in filters, sorts, and lookups. Document why each index exists.
+- **Async**: All I/O (MongoDB, HTTP, file) must be async. Use `await`; do not block the event loop.
+
+## Correctness
+
+- **Validation**: Pydantic validates request bodies. Validate query params with `Query()`, `Path()`. Reject invalid input with 422.
+- **404 for missing resources**: Return 404 when a resource does not exist. Provide a clear `detail` message. Do not leak internal ids in errors unless appropriate.
+- **Idempotency**: For create operations that might be retried, consider upsert or idempotency keys. Design so duplicate requests do not create duplicate records when that would be wrong.

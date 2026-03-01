@@ -1,0 +1,31 @@
+---
+description: Verification and testing discipline — always confirm your work
+alwaysApply: true
+---
+
+# Testing & Verification
+
+## Mandatory Verification
+
+- **After creating or modifying any API endpoint**: Hit it (via browser, curl, or the test suite) and confirm the response is correct before considering the task done.
+- **After changing frontend API calls**: Load the page in the browser and verify the data renders without errors. Check the browser console for warnings.
+- **After installing a dependency**: Confirm the dev server still starts cleanly with no import or build errors.
+
+## Run Verification Yourself
+
+- **Do not only instruct the user**—run `curl`, start servers, and use the browser tools yourself when possible to verify behavior. Non-developers should not have to guess how to test.
+- Backend: Run `curl http://localhost:8000/api/v1/<endpoint>` in the terminal, or use Swagger at `/docs`.
+- Frontend: Use the built-in browser to navigate to `http://localhost:5173`, take a snapshot, and confirm the UI and any API calls work.
+- If servers need to be running, start them in the background, then run your verification. Report what you verified before closing the task.
+
+## When to Write Tests
+
+- Add a test when the logic has meaningful branching, edge cases, or is critical-path (auth, payments, data mutations).
+- Simple CRUD or pass-through endpoints do not need unit tests immediately—verified manually is fine for a template.
+- Test files go in `backend/tests/` mirroring the source structure.
+
+## Do Not
+
+- Do not mark a task complete if the server is throwing errors.
+- Do not leave `console.log` or `print()` debugging statements in committed code.
+- Do not skip verification because "it should work." Prove it works.

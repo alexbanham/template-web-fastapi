@@ -1,0 +1,58 @@
+---
+description: React, shadcn/ui, and Tailwind 4 conventions for the frontend
+globs: frontend/**/*.{ts,tsx,css}
+alwaysApply: false
+---
+
+# Frontend Patterns
+
+## Component Guidelines
+
+- Use functional components only. No class components.
+- A component is reusable when **two or more** places need it. Until then, keep it colocated with its feature.
+- Use shadcn/ui primitives (`Button`, `Card`, `Input`, etc.) instead of writing custom UI from scratch. Add new shadcn components with `npx shadcn@latest add <component>`.
+- Props interfaces live in the same file as the component unless shared across multiple files.
+
+## File Organization
+
+```
+src/
+  api/          # API client + typed endpoint functions
+  components/   # Shared and feature components
+    ui/         # shadcn/ui generated components (do not hand-edit)
+  hooks/        # Custom React hooks
+  lib/          # Utilities, constants, helpers
+  pages/        # Route-level page components (when routing is added)
+```
+
+- New feature folders go under `components/`. Only promote to a top-level folder when it is clearly cross-cutting.
+
+## Styling
+
+- Use Tailwind utility classes directly. Do not create CSS modules or styled-components.
+- Use `cn()` from `@/lib/utils` to merge conditional classes.
+- Respect the theme variables in `index.css`. Do not hardcode colors—use `bg-primary`, `text-muted-foreground`, etc.
+
+## State & Data
+
+- Keep state as local as possible. Lift only when a parent genuinely needs it.
+- API calls go through `src/api/` using the typed `apiFetch` client—never raw `fetch` scattered in components.
+- Derive values instead of syncing state. Prefer `useMemo` over a second `useState` that mirrors another.
+
+## TypeScript
+
+- Strict mode is on. Do not use `any`. Use `unknown` + type narrowing if the type is truly dynamic.
+- Export types alongside the functions that produce or consume them.
+
+## Performance
+
+- **Memoization**: Use `useMemo` when a derived value is expensive and its dependencies rarely change. Use `useCallback` when passing callbacks to memoized children that depend on them. Do not memoize everything—only when there is a measurable benefit.
+- **Avoid unnecessary re-renders**: Inline object/array literals in JSX create new references every render and defeat `React.memo`. Extract stable references or memoize when passing to memoized children.
+- **Lists**: Use stable, unique `key` props (ids, not indices). Avoid `key={index}` when list order can change.
+- **Lazy loading**: Use `React.lazy` and `Suspense` for route-level code splitting. Lazy-load heavy components below the fold.
+
+## Correctness
+
+- **Loading and error states**: Every data fetch has three states—loading, success, error. Handle all three. Never leave a spinner running indefinitely; cap retries or show a recoverable error.
+- **Controlled vs uncontrolled**: For form inputs, pick one and stick with it. Controlled inputs need `value` + `onChange`; ensure the source of truth is correct.
+- **Keys**: Never use array index as `key` when items can be reordered, added, or removed. Use a stable unique id.

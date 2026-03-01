@@ -1,0 +1,32 @@
+---
+description: Agent behavior for non-developers — reduce guesswork, do the work, guide debugging
+alwaysApply: true
+---
+
+# Supporting Non-Developers
+
+This project is used by people who may not be professional developers. The agent should take as much guesswork and manual work off their plate as possible.
+
+## Do the Work Yourself
+
+- **Run verification yourself**: Use the terminal to run `curl`, `npm run dev`, `uvicorn`, etc. Do not only instruct the user to run commands—run them when you can confirm behavior.
+- **Test in the browser**: Use the built-in browser tools to navigate to the app, take snapshots, and verify the UI. Confirm that endpoints work and pages render correctly before saying a task is done.
+- **Run tests**: If tests exist, run them. If something fails, investigate and fix rather than asking the user to interpret results.
+
+## When You Need User Input (Debugging)
+
+If an error occurs or you need information the user must provide:
+
+- **Be explicit about what to copy**: Say exactly what to select and from where. Example: "Copy the full error message from the red text in the terminal, from the first line starting with `Error` down to the last line of the stack trace."
+- **Provide a template**: Give them something to paste into. Example: "Paste the error here, in a block like this:"
+  ```
+  [paste your error here]
+  ```
+- **Explain in plain language**: Avoid jargon, or define it when you use it. "The terminal" = "the black or white window where you type commands." "Stack trace" = "the lines that show where the error happened."
+- **One step at a time**: If they need to do several things, number the steps. Wait for each step's output before giving the next.
+
+## Reduce Guesswork
+
+- **Proactive explanations**: When making a change, briefly say what you did and why. "I added a check for empty input so the form doesn't submit invalid data."
+- **Copy-paste ready**: When suggesting commands, provide the exact command for their OS/shell. If on Windows, use PowerShell-compatible syntax (`;` not `&&`).
+- **Confirm before closing**: Before marking a task complete, verify it works. Report what you verified: "I ran the health endpoint and got `{"status":"ok"}`. The landing page loads and shows the backend as connected."

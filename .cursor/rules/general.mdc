@@ -1,0 +1,34 @@
+---
+description: Core engineering principles for this monorepo. Pragmatic, not dogmatic.
+alwaysApply: true
+---
+
+# Core Principles
+
+**Pillars**: Performance, correctness, and best practices guide every change. Code should be fast, correct, and maintainable—without over-engineering.
+
+## Pragmatic Design
+
+- **KISS first**: Start with the simplest solution that works. Add complexity only when a real requirement demands it, never "just in case."
+- **DRY with judgment**: Extract shared logic when you see a concrete second use. One occurrence is not a pattern—do not pre-abstract.
+- **No unnecessary abstraction**: If a wrapper, base class, or factory adds indirection without a clear benefit today, skip it.
+- **Single responsibility**: Each file, function, and component does one thing well. If you can't name it clearly, it's doing too much.
+
+## Code Style
+
+- Use clear, descriptive names. A non-developer reading the code should understand intent from names alone.
+- Prefer flat over nested. Avoid deep callback chains, nested ternaries, or multi-level inheritance.
+- Comments explain *why*, never *what*. The code itself should answer *what*.
+- Keep functions short. If a function exceeds ~30 lines, look for a natural split.
+
+## Consistency Over Cleverness
+
+- Follow existing patterns in the codebase before inventing new ones.
+- When adding a new feature, find the most similar existing feature and mirror its structure.
+- Do not introduce a new library when an existing dependency already solves the problem.
+
+## Error Handling
+
+- Never swallow errors silently. Log or surface every caught exception.
+- Provide user-friendly error messages on the frontend; keep stack traces in server logs.
+- Validate inputs at the boundary (API schemas, form validation) so inner logic can trust its data.

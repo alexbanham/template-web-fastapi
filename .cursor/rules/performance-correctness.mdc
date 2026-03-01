@@ -1,0 +1,28 @@
+---
+description: Performance, correctness, and best-practice standards
+alwaysApply: true
+---
+
+# Performance, Correctness, Best Practices
+
+## Performance
+
+- **Measure first**: Do not optimize prematurely. If something is slow, profile it. Prefer fast-by-default patterns (e.g. pagination, projection) over "fix it later."
+- **Avoid obvious waste**: No N+1 queries; no loading entire collections when you need a slice; no heavy computation on every render when it can be memoized or moved off the critical path.
+- **Lazy when appropriate**: Defer work until it's needed. Lazy-load routes, images, and heavy components. Do not fetch data the user might never see.
+- **Async all the way**: On the backend, use async/await for I/O. Blocking calls tie up the event loop and hurt throughput.
+- **Prefer the right tool**: Use database indexes for queries you run often. Use projection to fetch only the fields you need. Use pagination for lists.
+
+## Correctness
+
+- **Validate at boundaries**: Request bodies (Pydantic), query params, headers—validate once at the edge so inner logic can trust its inputs.
+- **Handle the empty and the null**: What happens with an empty list? A missing optional field? A deleted resource? Design for these cases explicitly.
+- **Idempotency where it matters**: Create vs upsert. Retries on network failure. Design mutations so that safe retries do not duplicate side effects when possible.
+- **Keys and identity**: React lists need stable `key` props. APIs need clear resource identification. Avoid relying on array indices for identity.
+- **Error states are first-class**: Every async operation can fail. Handle loading, success, and error. Surface errors to the user; do not leave the UI stuck in a loading state forever.
+
+## Best Practices
+
+- **Security baseline**: No secrets in code or logs. Validate and sanitize inputs. Use parameterized queries (Motor/PyMongo do this by default). Apply principle of least privilege.
+- **Readability over cleverness**: Code is read more often than written. Prefer explicit over implicit. If a one-liner obscures intent, split it.
+- **Fail fast**: Validate early. Return 400 for bad input instead of 500 deep in the stack. Log unexpected conditions so they can be fixed.
